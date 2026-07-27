@@ -1,0 +1,6 @@
+{
+  "name": "Healthedia - Global Health & Performance Archive",
+  "description": "A global archive for medical, health, sports science, rehabilitation, and human performance research, with an advanced search engine and researcher profiles.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

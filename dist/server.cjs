@@ -1,35 +1,45 @@
-import fs from "fs";
-import path from "path";
-import Database from "better-sqlite3";
-import { v4 as uuidv4 } from "uuid";
+var __create = Object.create;
+var __defProp = Object.defineProperty;
+var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __copyProps = (to, from, except, desc) => {
+  if (from && typeof from === "object" || typeof from === "function") {
+    for (let key of __getOwnPropNames(from))
+      if (!__hasOwnProp.call(to, key) && key !== except)
+        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+  }
+  return to;
+};
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 
-const DB_DIR = path.join(process.cwd(), "data");
-const SQLITE_PATH = path.join(DB_DIR, "healthedia.db");
+// server.ts
+var import_express = __toESM(require("express"), 1);
+var import_path2 = __toESM(require("path"), 1);
+var import_fs2 = __toESM(require("fs"), 1);
+var import_url = require("url");
+var import_vite = require("vite");
 
-export interface DatabaseStore {
-  users: any[];
-  professions: string[];
-  taxonomies: Record<string, string[]>;
-  manuscripts: any[];
-  tickets: any[];
-  appearance: any;
-  institutions: any[];
-  evaluations: any[];
-  institutionConfig: any;
-  projects: any[];
-  activityLogs: any[];
-  pages: any[];
-  redirects: any[];
-  seoSettings: any;
-  published_papers: any[];
-  systemSettings: any;
-}
-
-const DEFAULT_SYSTEM_SETTINGS = {
+// server/db.ts
+var import_fs = __toESM(require("fs"), 1);
+var import_path = __toESM(require("path"), 1);
+var import_better_sqlite3 = __toESM(require("better-sqlite3"), 1);
+var import_uuid = require("uuid");
+var DB_DIR = import_path.default.join(process.cwd(), "data");
+var SQLITE_PATH = import_path.default.join(DB_DIR, "healthedia.db");
+var DEFAULT_SYSTEM_SETTINGS = {
   websiteName: "Healthedia",
   websiteDescription: "A peer-reviewed, open-access academic resource indexing sports science, cardiology, physical therapy, biomechanics, and human physiology.",
   organizationName: "Healthedia Global Archive",
-  organizationAddress: "91 Boulevard de l'Hôpital, 75013 Paris, France",
+  organizationAddress: "91 Boulevard de l'H\xF4pital, 75013 Paris, France",
   contactEmail: "contact@healthedia.org",
   contactPhone: "+33 1 40 46 22 11",
   defaultLanguage: "en-US",
@@ -48,20 +58,47 @@ const DEFAULT_SYSTEM_SETTINGS = {
   maintenanceMode: false,
   debugMode: false
 };
-
-const DEFAULT_PROFESSIONS = [
-  "Physician", "Surgeon", "Dermatologist", "Cardiologist", "Neurologist", "Orthopedic Surgeon",
-  "Pediatrician", "Psychiatrist", "Dentist", "Pharmacist", "Nurse", "Physical Therapist",
-  "Sports Physical Therapist", "Sports Rehabilitation Specialist", "Sports Medicine Physician",
-  "Athletic Trainer", "Sports Scientist", "Exercise Physiologist", "Exercise Specialist",
-  "Strength & Conditioning Coach", "Personal Trainer", "Sports Nutritionist", "Clinical Nutritionist",
-  "Dietitian", "Public Health Specialist", "Occupational Therapist", "Speech Therapist",
-  "Psychologist", "Sports Psychologist", "Biomechanist", "Kinesiologist", "Medical Researcher",
-  "Clinical Researcher", "University Professor", "Lecturer", "Medical Student", "Physiotherapy Student",
+var DEFAULT_PROFESSIONS = [
+  "Physician",
+  "Surgeon",
+  "Dermatologist",
+  "Cardiologist",
+  "Neurologist",
+  "Orthopedic Surgeon",
+  "Pediatrician",
+  "Psychiatrist",
+  "Dentist",
+  "Pharmacist",
+  "Nurse",
+  "Physical Therapist",
+  "Sports Physical Therapist",
+  "Sports Rehabilitation Specialist",
+  "Sports Medicine Physician",
+  "Athletic Trainer",
+  "Sports Scientist",
+  "Exercise Physiologist",
+  "Exercise Specialist",
+  "Strength & Conditioning Coach",
+  "Personal Trainer",
+  "Sports Nutritionist",
+  "Clinical Nutritionist",
+  "Dietitian",
+  "Public Health Specialist",
+  "Occupational Therapist",
+  "Speech Therapist",
+  "Psychologist",
+  "Sports Psychologist",
+  "Biomechanist",
+  "Kinesiologist",
+  "Medical Researcher",
+  "Clinical Researcher",
+  "University Professor",
+  "Lecturer",
+  "Medical Student",
+  "Physiotherapy Student",
   "Healthcare Professional"
 ];
-
-const DEFAULT_TAXONOMIES = {
+var DEFAULT_TAXONOMIES = {
   medicalSpecialties: ["Cardiology", "Neurology", "Dermatology", "Orthopedic Surgery", "Pediatrics", "Psychiatry", "General Medicine"],
   sportsScienceDisciplines: ["Exercise Physiology", "Biomechanics", "Kinesiology", "Sports Nutrition", "Athletic Conditioning"],
   humanPerformanceFields: ["Endurance Kinetics", "Muscle Hypertrophy", "Sleep Optimization", "Recovery Kinetics"],
@@ -75,8 +112,7 @@ const DEFAULT_TAXONOMIES = {
   publicationTypes: ["Journal Article", "Review Paper", "Conference Proceeding", "Consensus Guideline"],
   researchTypes: ["Randomized Controlled Trial", "Systematic Review", "Meta-Analysis", "Cohort Study", "Case Study"]
 };
-
-const DEMO_USERS = [
+var DEMO_USERS = [
   {
     email: "admin@healthedia.org",
     name: "Alistair Vance",
@@ -174,8 +210,7 @@ const DEMO_USERS = [
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200"
   }
 ];
-
-const INITIAL_MANUSCRIPTS = [
+var INITIAL_MANUSCRIPTS = [
   {
     id: "ms-001",
     title: "Kinetic Profiles of Quadriceps Activation in Eccentric Leg Extensions: A High-Density EMG Study",
@@ -207,8 +242,7 @@ const INITIAL_MANUSCRIPTS = [
     status: "Under Review"
   }
 ];
-
-const INITIAL_TICKETS = [
+var INITIAL_TICKETS = [
   {
     id: "ticket-101",
     category: "Publication Error",
@@ -228,8 +262,7 @@ const INITIAL_TICKETS = [
     userEmail: "reviewer@healthedia.org"
   }
 ];
-
-const INITIAL_APPEARANCE = {
+var INITIAL_APPEARANCE = {
   themeName: "Classic Slate",
   colorAccent: "#171717",
   colorAccentLight: "#f5f5f5",
@@ -240,8 +273,7 @@ const INITIAL_APPEARANCE = {
   heroSubtitle: "A peer-reviewed, open-access academic resource indexing sports science, cardiology, physical therapy, biomechanics, and human physiology.",
   navStyle: "minimalist"
 };
-
-const DEFAULT_EVALUATION_CRITERIA = [
+var DEFAULT_EVALUATION_CRITERIA = [
   { id: "edu_quality", name: "Education Quality", question: "How would you rate the academic standards, curriculum, and clinical mentorship?", weight: 15 },
   { id: "res_quality", name: "Research Quality", question: "Rate the research infrastructure, laboratory facilities, and access to funding.", weight: 15 },
   { id: "reputation", name: "Academic Reputation", question: "How well is the institution recognized globally in clinical and sports science circles?", weight: 10 },
@@ -253,8 +285,7 @@ const DEFAULT_EVALUATION_CRITERIA = [
   { id: "innovation", name: "Innovation & Patents", question: "How would you rate their medical device designs, therapeutic discoveries, and patents?", weight: 10 },
   { id: "int_collab", name: "International Collaboration", question: "How active are their collaborative frameworks with WHO and global research universities?", weight: 5 }
 ];
-
-const DEFAULT_INSTITUTION_CONFIG = {
+var DEFAULT_INSTITUTION_CONFIG = {
   institutionTypes: ["Medical School", "Research Institute", "Public Health Agency", "Sports Science Center", "Rehabilitation Clinic", "University Hospital"],
   medicalCategories: ["Cardiology", "Neurology", "Sports Medicine", "Human Performance", "Orthopedic Rehabilitation", "General Medicine", "Oncology", "Pediatrics", "Immunology"],
   evaluationCriteria: DEFAULT_EVALUATION_CRITERIA,
@@ -266,8 +297,7 @@ const DEFAULT_INSTITUTION_CONFIG = {
   minEvaluatorRole: "Member",
   autoVerifyAffiliations: false
 };
-
-const INITIAL_INSTITUTIONS = [
+var INITIAL_INSTITUTIONS = [
   {
     id: "harvard-medical-school",
     name: "Harvard Medical School",
@@ -298,20 +328,20 @@ const INITIAL_INSTITUTIONS = [
   {
     id: "sorbonne-university-medicine",
     name: "Sorbonne University Faculty of Medicine",
-    officialName: "Sorbonne Université Faculté de Médecine",
+    officialName: "Sorbonne Universit\xE9 Facult\xE9 de M\xE9decine",
     shortName: "Sorbonne Medicine",
     country: "France",
     city: "Paris",
     website: "https://sante.sorbonne-universite.fr",
     logo: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&q=80&w=200",
     institutionType: "Medical School",
-    description: "One of the premier medical faculties in Europe, integrating fundamental bio-medical research with clinical practice alongside teaching hospitals like Pitié-Salpêtrière.",
+    description: "One of the premier medical faculties in Europe, integrating fundamental bio-medical research with clinical practice alongside teaching hospitals like Piti\xE9-Salp\xEAtri\xE8re.",
     history: "Constructed on centuries of Parisian academic history, the modern faculty was consolidated to lead European clinical trials, sports science kinetics, and neuroscience projects.",
     faculties: ["Department of Sports Science", "Department of Cardiovascular Physiology", "Department of Immunology"],
     specialties: ["Sports Medicine", "Cardiology", "Neurology", "Immunology", "Orthopedic Rehabilitation"],
     phone: "+33 1 40 46 22 11",
     email: "contact@sorbonne.fr",
-    address: "91 Boulevard de l'Hôpital, 75013 Paris, France",
+    address: "91 Boulevard de l'H\xF4pital, 75013 Paris, France",
     status: "Approved",
     submittedBy: "reviewer@healthedia.org",
     submittedAt: "2024-03-22",
@@ -377,8 +407,7 @@ const INITIAL_INSTITUTIONS = [
     }
   }
 ];
-
-const INITIAL_EVALUATIONS = [
+var INITIAL_EVALUATIONS = [
   {
     id: "eval-001",
     institutionId: "harvard-medical-school",
@@ -424,8 +453,7 @@ const INITIAL_EVALUATIONS = [
     comments: "The cellular and physiological physiology labs are world leaders. Access to cutting-edge iPS equipment makes Kyoto a premier research choice."
   }
 ];
-
-const INITIAL_PROJECTS = [
+var INITIAL_PROJECTS = [
   {
     id: "proj-101",
     title: "High-Altitude Hypoxia Adaptation in Elite Cyclists",
@@ -451,7 +479,7 @@ const INITIAL_PROJECTS = [
       conclusion: "Intermittent hypoxic sleeping combined with sea-level intensive training provides a safe, reproducible elevation of hematological profiles.",
       ethical_approval: "Approved by the Academic Ethical Panel of Sorbonne Medical Center (Ref: HS-2026-0922).",
       funding: "Supported by the Global Performance Grant Scheme (Ref: GP-109).",
-      conflict_of_interest: "None declared.",
+      conflict_of_interest: "None declared."
     },
     references: [
       {
@@ -490,8 +518,8 @@ const INITIAL_PROJECTS = [
         caption: "Physiological Metrics Baseline vs Post-Intervention",
         content: [
           ["Metric", "Hypoxic Group (Pre)", "Hypoxic Group (Post)", "Control Group (Pre)", "Control Group (Post)"],
-          ["Hb Mass (g)", "840 \u00B1 12", "882 \u00B1 14*", "845 \u00B1 11", "848 \u00B1 12"],
-          ["VO2max (mL/kg)", "74.2 \u00B1 2.1", "76.8 \u00B1 1.8", "73.9 \u00B1 1.9", "74.1 \u00B1 2.0"],
+          ["Hb Mass (g)", "840 \xB1 12", "882 \xB1 14*", "845 \xB1 11", "848 \xB1 12"],
+          ["VO2max (mL/kg)", "74.2 \xB1 2.1", "76.8 \xB1 1.8", "73.9 \xB1 1.9", "74.1 \xB1 2.0"],
           ["Reticulocytes (%)", "1.12", "1.38*", "1.09", "1.11"]
         ]
       }
@@ -600,8 +628,7 @@ const INITIAL_PROJECTS = [
     exportHistory: []
   }
 ];
-
-const INITIAL_ACTIVITY_LOGS = [
+var INITIAL_ACTIVITY_LOGS = [
   {
     id: "log-1",
     timestamp: "2026-07-16 01:22",
@@ -611,8 +638,7 @@ const INITIAL_ACTIVITY_LOGS = [
     details: "Created manuscript draft 'High-Altitude Hypoxia Adaptation in Elite Cyclists'."
   }
 ];
-
-const DEFAULT_SEO_SETTINGS = {
+var DEFAULT_SEO_SETTINGS = {
   siteTitle: "Healthedia - Global Health & Performance Archive",
   siteDescription: "A global archive for medical, health, sports science, rehabilitation, and human performance research, with an advanced search engine and researcher profiles.",
   metaKeywords: "medical research, sports science, kinesiology, biomechanics, physical therapy, cardiology, human performance",
@@ -624,12 +650,18 @@ const DEFAULT_SEO_SETTINGS = {
   googleSearchConsole: "gsc-verification-code-12345",
   bingWebmaster: "bing-verification-code-67890",
   analyticsId: "G-HEALT12345",
-  customHeaderScripts: "<!-- Google Tag Manager / Analytics Tracking -->\n<script async src=\"https://www.googletagmanager.com/gtag/js?id=G-HEALT12345\"></script>\n<script>\n  window.dataLayer = window.dataLayer || [];\n  function gtag(){dataLayer.push(arguments);}\n  gtag('js', new Date());\n  gtag('config', 'G-HEALT12345');\n</script>",
+  customHeaderScripts: `<!-- Google Tag Manager / Analytics Tracking -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HEALT12345"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-HEALT12345');
+</script>`,
   searchEngineIndex: true,
   searchEngineFollow: true
 };
-
-const INITIAL_PAGES = [
+var INITIAL_PAGES = [
   {
     id: "page-1",
     title: "Home Page",
@@ -675,12 +707,10 @@ const INITIAL_PAGES = [
     revisions: [{ timestamp: "2024-01-10 08:00", action: "System Page Initialized", author: "System" }]
   }
 ];
-
-const INITIAL_REDIRECTS = [
+var INITIAL_REDIRECTS = [
   { id: "redir-1", source: "/archive", target: "/journal", status: "301", createdAt: "2026-07-10T05:00:00Z" }
 ];
-
-const INITIAL_PAPERS = [
+var INITIAL_PAPERS = [
   {
     id: "paper-001",
     title: "Physiological Adaptations to High-Intensity Interval Training vs. Continuous Aerobic Training in Elite Athletes",
@@ -750,666 +780,514 @@ const INITIAL_PAPERS = [
     doiUrl: "https://doi.org/10.2478/bhk-2023-0014"
   }
 ];
-
-// Initialize global SQLite DB connection safely with normalized schema layout
-let sqliteDB: any = null;
-
-export function initDB(): DatabaseStore {
-  if (!fs.existsSync(DB_DIR)) {
-    fs.mkdirSync(DB_DIR, { recursive: true });
+var sqliteDB = null;
+function initDB() {
+  if (!import_fs.default.existsSync(DB_DIR)) {
+    import_fs.default.mkdirSync(DB_DIR, { recursive: true });
   }
-
-  const isFirstBoot = !fs.existsSync(SQLITE_PATH);
-
+  const isFirstBoot = !import_fs.default.existsSync(SQLITE_PATH);
   if (!sqliteDB) {
-    sqliteDB = new Database(SQLITE_PATH);
+    sqliteDB = new import_better_sqlite3.default(SQLITE_PATH);
     sqliteDB.pragma("journal_mode = WAL");
-    // Soft referential integrity to tolerate seed constraints
-    sqliteDB.pragma("foreign_keys = OFF");
   }
-
-  // Define cleanly normalized, highly scalable tables mapping system elements relational design
   sqliteDB.exec(`
     CREATE TABLE IF NOT EXISTS system_data (
       key TEXT PRIMARY KEY,
       value TEXT NOT NULL
     );
-
-    CREATE TABLE IF NOT EXISTS users (
-      email TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      username TEXT,
-      role TEXT,
-      status TEXT,
-      joinedAt TEXT,
-      profession TEXT,
-      title TEXT,
-      specialty TEXT,
-      institution TEXT,
-      country TEXT,
-      degree TEXT,
-      orcid TEXT,
-      bio TEXT,
-      qualifications TEXT, -- JSON Array
-      researchInterests TEXT, -- JSON Array
-      publications TEXT, -- JSON Array
-      awards TEXT, -- JSON Array
-      certifications TEXT, -- JSON Array
-      googleScholar TEXT,
-      researchGate TEXT,
-      scopus TEXT,
-      verified INTEGER,
-      verificationSubmitted INTEGER,
-      avatar TEXT
-    );
-
-    CREATE TABLE IF NOT EXISTS published_papers (
-      id TEXT PRIMARY KEY,
-      title TEXT NOT NULL,
-      authors TEXT, -- JSON Array
-      journal TEXT,
-      year INTEGER,
-      specialty TEXT,
-      institution TEXT,
-      country TEXT,
-      language TEXT,
-      researchType TEXT,
-      doi TEXT,
-      abstract TEXT,
-      keywords TEXT, -- JSON Array
-      pdfUrl TEXT,
-      doiUrl TEXT
-    );
-
-    CREATE TABLE IF NOT EXISTS manuscripts (
-      id TEXT PRIMARY KEY,
-      title TEXT NOT NULL,
-      abstract TEXT,
-      authors TEXT, -- JSON Array
-      authorEmail TEXT,
-      journalCategory TEXT,
-      researchType TEXT,
-      specialty TEXT,
-      institution TEXT,
-      country TEXT,
-      keywords TEXT, -- JSON Array
-      submittedAt TEXT,
-      status TEXT
-    );
-
-    CREATE TABLE IF NOT EXISTS tickets (
-      id TEXT PRIMARY KEY,
-      category TEXT,
-      title TEXT,
-      description TEXT,
-      status TEXT,
-      createdAt TEXT,
-      userEmail TEXT,
-      FOREIGN KEY (userEmail) REFERENCES users(email) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS institutions (
-      id TEXT PRIMARY KEY,
-      name TEXT NOT NULL,
-      officialName TEXT,
-      shortName TEXT,
-      country TEXT,
-      city TEXT,
-      website TEXT,
-      logo TEXT,
-      institutionType TEXT,
-      description TEXT,
-      history TEXT,
-      faculties TEXT, -- JSON Array
-      specialties TEXT, -- JSON Array
-      phone TEXT,
-      email TEXT,
-      address TEXT,
-      status TEXT,
-      submittedBy TEXT,
-      submittedAt TEXT,
-      customStats TEXT -- JSON Object
-    );
-
-    CREATE TABLE IF NOT EXISTS evaluations (
-      id TEXT PRIMARY KEY,
-      institutionId TEXT,
-      userEmail TEXT,
-      userName TEXT,
-      userRelationship TEXT,
-      isVerified INTEGER,
-      submittedAt TEXT,
-      scores TEXT, -- JSON Object
-      comments TEXT,
-      FOREIGN KEY (institutionId) REFERENCES institutions(id) ON DELETE CASCADE,
-      FOREIGN KEY (userEmail) REFERENCES users(email) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS projects (
-      id TEXT PRIMARY KEY,
-      title TEXT NOT NULL,
-      status TEXT,
-      owner TEXT,
-      createdAt TEXT,
-      updatedAt TEXT,
-      sections TEXT, -- JSON Object
-      references_list TEXT, -- JSON Array
-      figures TEXT, -- JSON Array
-      tables TEXT, -- JSON Array
-      collaborators TEXT, -- JSON Array
-      comments TEXT, -- JSON Array
-      highlights TEXT, -- JSON Array
-      versionHistory TEXT, -- JSON Array
-      exportHistory TEXT, -- JSON Array
-      FOREIGN KEY (owner) REFERENCES users(email) ON DELETE CASCADE
-    );
-
-    CREATE TABLE IF NOT EXISTS pages (
-      id TEXT PRIMARY KEY,
-      title TEXT NOT NULL,
-      slug TEXT UNIQUE,
-      status TEXT,
-      visibility TEXT,
-      hideFromNav INTEGER,
-      seoTitle TEXT,
-      seoDescription TEXT,
-      isSystem INTEGER,
-      createdAt TEXT,
-      updatedAt TEXT,
-      revisions TEXT -- JSON Array
-    );
-
-    CREATE TABLE IF NOT EXISTS redirects (
-      id TEXT PRIMARY KEY,
-      source TEXT,
-      target TEXT,
-      status TEXT,
-      createdAt TEXT
-    );
-
-    CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
-    CREATE INDEX IF NOT EXISTS idx_papers_doi ON published_papers(doi);
-    CREATE INDEX IF NOT EXISTS idx_evaluations_inst ON evaluations(institutionId);
-    CREATE INDEX IF NOT EXISTS idx_projects_owner ON projects(owner);
   `);
-
   if (isFirstBoot) {
-    console.log("[SQLite Relational DB] Seeding initial clean normalized tables...");
-
-    // Seed generic single-value configs
-    const genericMap: Record<string, any> = {
+    console.log("[SQLite DB] Initializing schema and seeding initial datasets...");
+    const seedMap = {
+      users: DEMO_USERS,
       professions: DEFAULT_PROFESSIONS,
       taxonomies: DEFAULT_TAXONOMIES,
+      manuscripts: INITIAL_MANUSCRIPTS,
+      tickets: INITIAL_TICKETS,
       appearance: INITIAL_APPEARANCE,
+      institutions: INITIAL_INSTITUTIONS,
+      evaluations: INITIAL_EVALUATIONS,
       institutionConfig: DEFAULT_INSTITUTION_CONFIG,
+      projects: INITIAL_PROJECTS,
+      activityLogs: INITIAL_ACTIVITY_LOGS,
+      pages: INITIAL_PAGES,
+      redirects: INITIAL_REDIRECTS,
       seoSettings: DEFAULT_SEO_SETTINGS,
+      published_papers: INITIAL_PAPERS,
       systemSettings: DEFAULT_SYSTEM_SETTINGS
     };
-
     const insertStmt = sqliteDB.prepare("INSERT OR REPLACE INTO system_data (key, value) VALUES (?, ?)");
-    for (const [key, val] of Object.entries(genericMap)) {
+    for (const [key, val] of Object.entries(seedMap)) {
       insertStmt.run(key, JSON.stringify(val));
     }
-
-    // Seed Users
-    const userStmt = sqliteDB.prepare(`
-      INSERT OR REPLACE INTO users (
-        email, name, username, role, status, joinedAt, profession, title, specialty,
-        institution, country, degree, orcid, bio, qualifications, researchInterests,
-        publications, awards, certifications, googleScholar, researchGate, scopus,
-        verified, verificationSubmitted, avatar
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    for (const u of DEMO_USERS) {
-      userStmt.run(
-        u.email, u.name, u.username, u.role, u.status, u.joinedAt, u.profession, u.title, u.specialty,
-        u.institution, u.country, u.degree, u.orcid, u.bio,
-        JSON.stringify(u.qualifications), JSON.stringify(u.researchInterests), JSON.stringify(u.publications),
-        JSON.stringify(u.awards), JSON.stringify(u.certifications),
-        u.googleScholar || "", u.researchGate || "", u.scopus || "",
-        u.verified ? 1 : 0, u.verificationSubmitted ? 1 : 0, u.avatar
-      );
-    }
-
-    // Seed Papers
-    const paperStmt = sqliteDB.prepare(`
-      INSERT OR REPLACE INTO published_papers (
-        id, title, authors, journal, year, specialty, institution, country, language,
-        researchType, doi, abstract, keywords, pdfUrl, doiUrl
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    for (const p of INITIAL_PAPERS) {
-      paperStmt.run(
-        p.id, p.title, JSON.stringify(p.authors), p.journal, p.year, p.specialty, p.institution,
-        p.country, p.language, p.researchType, p.doi, p.abstract, JSON.stringify(p.keywords),
-        p.pdfUrl || "#", p.doiUrl || ""
-      );
-    }
-
-    // Seed Manuscripts
-    const msStmt = sqliteDB.prepare(`
-      INSERT OR REPLACE INTO manuscripts (
-        id, title, abstract, authors, authorEmail, journalCategory, researchType,
-        specialty, institution, country, keywords, submittedAt, status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    for (const m of INITIAL_MANUSCRIPTS) {
-      msStmt.run(
-        m.id, m.title, m.abstract, JSON.stringify(m.authors), m.authorEmail, m.journalCategory,
-        m.researchType, m.specialty, m.institution, m.country, JSON.stringify(m.keywords),
-        m.submittedAt, m.status
-      );
-    }
-
-    // Seed Tickets
-    const ticketStmt = sqliteDB.prepare(`
-      INSERT OR REPLACE INTO tickets (
-        id, category, title, description, status, createdAt, userEmail
-      ) VALUES (?, ?, ?, ?, ?, ?, ?)
-    `);
-    for (const t of INITIAL_TICKETS) {
-      ticketStmt.run(t.id, t.category, t.title, t.description, t.status, t.createdAt, t.userEmail);
-    }
-
-    // Seed Institutions
-    const instStmt = sqliteDB.prepare(`
-      INSERT OR REPLACE INTO institutions (
-        id, name, officialName, shortName, country, city, website, logo, institutionType,
-        description, history, faculties, specialties, phone, email, address, status,
-        submittedBy, submittedAt, customStats
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    for (const i of INITIAL_INSTITUTIONS) {
-      instStmt.run(
-        i.id, i.name, i.officialName, i.shortName || "", i.country, i.city, i.website, i.logo,
-        i.institutionType, i.description, i.history, JSON.stringify(i.faculties), JSON.stringify(i.specialties),
-        i.phone || "", i.email || "", i.address || "", i.status, i.submittedBy || "", i.submittedAt,
-        JSON.stringify(i.customStats)
-      );
-    }
-
-    // Seed Evaluations
-    const evalStmt = sqliteDB.prepare(`
-      INSERT OR REPLACE INTO evaluations (
-        id, institutionId, userEmail, userName, userRelationship, isVerified, submittedAt,
-        scores, comments
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    for (const ev of INITIAL_EVALUATIONS) {
-      evalStmt.run(
-        ev.id, ev.institutionId, ev.userEmail, ev.userName, ev.userRelationship,
-        ev.isVerified ? 1 : 0, ev.submittedAt, JSON.stringify(ev.scores), ev.comments
-      );
-    }
-
-    // Seed Projects
-    const projStmt = sqliteDB.prepare(`
-      INSERT OR REPLACE INTO projects (
-        id, title, status, owner, createdAt, updatedAt, sections, references_list,
-        figures, tables, collaborators, comments, highlights, versionHistory, exportHistory
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    for (const pr of INITIAL_PROJECTS) {
-      projStmt.run(
-        pr.id, pr.title, pr.status, pr.owner, pr.createdAt, pr.updatedAt,
-        JSON.stringify(pr.sections), JSON.stringify(pr.references), JSON.stringify(pr.figures),
-        JSON.stringify(pr.tables), JSON.stringify(pr.collaborators), JSON.stringify(pr.comments),
-        JSON.stringify(pr.highlights), JSON.stringify(pr.versionHistory), JSON.stringify(pr.exportHistory)
-      );
-    }
-
-    // Seed Pages
-    const pageStmt = sqliteDB.prepare(`
-      INSERT OR REPLACE INTO pages (
-        id, title, slug, status, visibility, hideFromNav, seoTitle, seoDescription,
-        isSystem, createdAt, updatedAt, revisions
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    for (const pg of INITIAL_PAGES) {
-      pageStmt.run(
-        pg.id, pg.title, pg.slug, pg.status, pg.visibility, pg.hideFromNav ? 1 : 0,
-        pg.seoTitle, pg.seoDescription, pg.isSystem ? 1 : 0, pg.createdAt, pg.updatedAt,
-        JSON.stringify(pg.revisions)
-      );
-    }
-
-    // Seed Redirects
-    const redirStmt = sqliteDB.prepare(`
-      INSERT OR REPLACE INTO redirects (
-        id, source, target, status, createdAt
-      ) VALUES (?, ?, ?, ?, ?)
-    `);
-    for (const rd of INITIAL_REDIRECTS) {
-      redirStmt.run(rd.id, rd.source, rd.target, rd.status, rd.createdAt);
-    }
-
-    // Seed Activity Logs
-    sqliteDB.prepare("INSERT OR REPLACE INTO system_data (key, value) VALUES ('activityLogs', ?)").run(JSON.stringify(INITIAL_ACTIVITY_LOGS));
   }
-
   return dbOps.getStore();
 }
-
-export const dbOps = {
-  getStore: (): DatabaseStore => {
+var dbOps = {
+  getStore: () => {
     if (!sqliteDB) initDB();
-
-    const store: any = {};
-
-    // Restore standard generic configurations
-    const genericKeys = ["professions", "taxonomies", "appearance", "institutionConfig", "seoSettings", "systemSettings", "activityLogs"];
-    for (const key of genericKeys) {
-      const row = sqliteDB.prepare("SELECT value FROM system_data WHERE key = ?").get(key) as { value: string } | undefined;
-      if (row) {
-        try {
-          store[key] = JSON.parse(row.value);
-        } catch {
-          store[key] = null;
-        }
+    const rows = sqliteDB.prepare("SELECT key, value FROM system_data").all();
+    const store = {};
+    for (const row of rows) {
+      try {
+        store[row.key] = JSON.parse(row.value);
+      } catch (e) {
+        store[row.key] = null;
       }
     }
-
-    // Hydrate relational collections back into in-memory representation for SPA hydration compatibility
-    const parseList = (jsonStr: string) => {
-      try { return JSON.parse(jsonStr) || []; } catch { return []; }
-    };
-    const parseObj = (jsonStr: string) => {
-      try { return JSON.parse(jsonStr) || {}; } catch { return {}; }
-    };
-
-    // Hydrate users
-    const usersRows = sqliteDB.prepare("SELECT * FROM users").all() as any[];
-    store.users = usersRows.map(u => ({
-      ...u,
-      verified: !!u.verified,
-      verificationSubmitted: !!u.verificationSubmitted,
-      qualifications: parseList(u.qualifications),
-      researchInterests: parseList(u.researchInterests),
-      publications: parseList(u.publications),
-      awards: parseList(u.awards),
-      certifications: parseList(u.certifications)
-    }));
-
-    // Hydrate published papers
-    const papersRows = sqliteDB.prepare("SELECT * FROM published_papers").all() as any[];
-    store.published_papers = papersRows.map(p => ({
-      ...p,
-      authors: parseList(p.authors),
-      keywords: parseList(p.keywords)
-    }));
-
-    // Hydrate manuscripts
-    const msRows = sqliteDB.prepare("SELECT * FROM manuscripts").all() as any[];
-    store.manuscripts = msRows.map(m => ({
-      ...m,
-      authors: parseList(m.authors),
-      keywords: parseList(m.keywords)
-    }));
-
-    // Hydrate tickets
-    store.tickets = sqliteDB.prepare("SELECT * FROM tickets").all() as any[];
-
-    // Hydrate institutions
-    const instRows = sqliteDB.prepare("SELECT * FROM institutions").all() as any[];
-    store.institutions = instRows.map(i => ({
-      ...i,
-      faculties: parseList(i.faculties),
-      specialties: parseList(i.specialties),
-      customStats: parseObj(i.customStats)
-    }));
-
-    // Hydrate evaluations
-    const evalRows = sqliteDB.prepare("SELECT * FROM evaluations").all() as any[];
-    store.evaluations = evalRows.map(ev => ({
-      ...ev,
-      isVerified: !!ev.isVerified,
-      scores: parseObj(ev.scores)
-    }));
-
-    // Hydrate projects
-    const projRows = sqliteDB.prepare("SELECT * FROM projects").all() as any[];
-    store.projects = projRows.map(pr => ({
-      ...pr,
-      sections: parseObj(pr.sections),
-      references: parseList(pr.references_list),
-      figures: parseList(pr.figures),
-      tables: parseList(pr.tables),
-      collaborators: parseList(pr.collaborators),
-      comments: parseList(pr.comments),
-      highlights: parseList(pr.highlights),
-      versionHistory: parseList(pr.versionHistory),
-      exportHistory: parseList(pr.exportHistory)
-    }));
-
-    // Hydrate pages
-    const pageRows = sqliteDB.prepare("SELECT * FROM pages").all() as any[];
-    store.pages = pageRows.map(pg => ({
-      ...pg,
-      hideFromNav: !!pg.hideFromNav,
-      isSystem: !!pg.isSystem,
-      revisions: parseList(pg.revisions)
-    }));
-
-    // Hydrate redirects
-    store.redirects = sqliteDB.prepare("SELECT * FROM redirects").all() as any[];
-
-    // Backwards compatibility fallbacks
     if (!store.systemSettings) store.systemSettings = { ...DEFAULT_SYSTEM_SETTINGS };
     if (!store.professions) store.professions = DEFAULT_PROFESSIONS;
     if (!store.taxonomies) store.taxonomies = DEFAULT_TAXONOMIES;
+    if (!store.users) store.users = DEMO_USERS;
+    if (!store.manuscripts) store.manuscripts = INITIAL_MANUSCRIPTS;
+    if (!store.tickets) store.tickets = INITIAL_TICKETS;
     if (!store.appearance) store.appearance = INITIAL_APPEARANCE;
+    if (!store.institutions) store.institutions = INITIAL_INSTITUTIONS;
+    if (!store.evaluations) store.evaluations = INITIAL_EVALUATIONS;
     if (!store.institutionConfig) store.institutionConfig = DEFAULT_INSTITUTION_CONFIG;
-    if (!store.seoSettings) store.seoSettings = DEFAULT_SEO_SETTINGS;
+    if (!store.projects) store.projects = INITIAL_PROJECTS;
     if (!store.activityLogs) store.activityLogs = INITIAL_ACTIVITY_LOGS;
-
-    return store as DatabaseStore;
+    if (!store.pages) store.pages = INITIAL_PAGES;
+    if (!store.redirects) store.redirects = INITIAL_REDIRECTS;
+    if (!store.seoSettings) store.seoSettings = DEFAULT_SEO_SETTINGS;
+    if (!store.published_papers) store.published_papers = INITIAL_PAPERS;
+    return store;
   },
-
-  getCollection: (collection: keyof DatabaseStore): any[] => {
-    const store = dbOps.getStore();
-    return (store[collection] as any[]) || [];
-  },
-
-  setCollection: (collection: keyof DatabaseStore, data: any): void => {
+  getCollection: (collection) => {
     if (!sqliteDB) initDB();
-
-    const genericKeys = ["professions", "taxonomies", "appearance", "institutionConfig", "seoSettings", "systemSettings", "activityLogs"];
-    if (genericKeys.includes(collection)) {
-      sqliteDB.prepare("INSERT OR REPLACE INTO system_data (key, value) VALUES (?, ?)").run(collection, JSON.stringify(data));
-      return;
-    }
-
-    // Re-seed relational tables atomically during sync
-    if (collection === "users" && Array.isArray(data)) {
-      sqliteDB.transaction(() => {
-        sqliteDB.prepare("DELETE FROM users").run();
-        const userStmt = sqliteDB.prepare(`
-          INSERT OR REPLACE INTO users (
-            email, name, username, role, status, joinedAt, profession, title, specialty,
-            institution, country, degree, orcid, bio, qualifications, researchInterests,
-            publications, awards, certifications, googleScholar, researchGate, scopus,
-            verified, verificationSubmitted, avatar
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `);
-        for (const u of data) {
-          userStmt.run(
-            u.email, u.name, u.username, u.role, u.status, u.joinedAt, u.profession, u.title, u.specialty,
-            u.institution, u.country, u.degree, u.orcid, u.bio,
-            JSON.stringify(u.qualifications || []), JSON.stringify(u.researchInterests || []), JSON.stringify(u.publications || []),
-            JSON.stringify(u.awards || []), JSON.stringify(u.certifications || []),
-            u.googleScholar || "", u.researchGate || "", u.scopus || "",
-            u.verified ? 1 : 0, u.verificationSubmitted ? 1 : 0, u.avatar
-          );
-        }
-      })();
-    } else if (collection === "published_papers" && Array.isArray(data)) {
-      sqliteDB.transaction(() => {
-        sqliteDB.prepare("DELETE FROM published_papers").run();
-        const paperStmt = sqliteDB.prepare(`
-          INSERT OR REPLACE INTO published_papers (
-            id, title, authors, journal, year, specialty, institution, country, language,
-            researchType, doi, abstract, keywords, pdfUrl, doiUrl
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `);
-        for (const p of data) {
-          paperStmt.run(
-            p.id, p.title, JSON.stringify(p.authors || []), p.journal, p.year, p.specialty, p.institution,
-            p.country, p.language, p.researchType, p.doi, p.abstract, JSON.stringify(p.keywords || []),
-            p.pdfUrl || "#", p.doiUrl || ""
-          );
-        }
-      })();
-    } else if (collection === "manuscripts" && Array.isArray(data)) {
-      sqliteDB.transaction(() => {
-        sqliteDB.prepare("DELETE FROM manuscripts").run();
-        const msStmt = sqliteDB.prepare(`
-          INSERT OR REPLACE INTO manuscripts (
-            id, title, abstract, authors, authorEmail, journalCategory, researchType,
-            specialty, institution, country, keywords, submittedAt, status
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `);
-        for (const m of data) {
-          msStmt.run(
-            m.id, m.title, m.abstract, JSON.stringify(m.authors || []), m.authorEmail, m.journalCategory,
-            m.researchType, m.specialty, m.institution, m.country, JSON.stringify(m.keywords || []),
-            m.submittedAt, m.status
-          );
-        }
-      })();
-    } else if (collection === "tickets" && Array.isArray(data)) {
-      sqliteDB.transaction(() => {
-        sqliteDB.prepare("DELETE FROM tickets").run();
-        const ticketStmt = sqliteDB.prepare(`
-          INSERT OR REPLACE INTO tickets (
-            id, category, title, description, status, createdAt, userEmail
-          ) VALUES (?, ?, ?, ?, ?, ?, ?)
-        `);
-        for (const t of data) {
-          ticketStmt.run(t.id, t.category, t.title, t.description, t.status, t.createdAt, t.userEmail);
-        }
-      })();
-    } else if (collection === "institutions" && Array.isArray(data)) {
-      sqliteDB.transaction(() => {
-        sqliteDB.prepare("DELETE FROM institutions").run();
-        const instStmt = sqliteDB.prepare(`
-          INSERT OR REPLACE INTO institutions (
-            id, name, officialName, shortName, country, city, website, logo, institutionType,
-            description, history, faculties, specialties, phone, email, address, status,
-            submittedBy, submittedAt, customStats
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `);
-        for (const i of data) {
-          instStmt.run(
-            i.id, i.name, i.officialName, i.shortName || "", i.country, i.city, i.website, i.logo,
-            i.institutionType, i.description, i.history, JSON.stringify(i.faculties || []), JSON.stringify(i.specialties || []),
-            i.phone || "", i.email || "", i.address || "", i.status, i.submittedBy || "", i.submittedAt,
-            JSON.stringify(i.customStats || {})
-          );
-        }
-      })();
-    } else if (collection === "evaluations" && Array.isArray(data)) {
-      sqliteDB.transaction(() => {
-        sqliteDB.prepare("DELETE FROM evaluations").run();
-        const evalStmt = sqliteDB.prepare(`
-          INSERT OR REPLACE INTO evaluations (
-            id, institutionId, userEmail, userName, userRelationship, isVerified, submittedAt,
-            scores, comments
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `);
-        for (const ev of data) {
-          evalStmt.run(
-            ev.id, ev.institutionId, ev.userEmail, ev.userName, ev.userRelationship,
-            ev.isVerified ? 1 : 0, ev.submittedAt, JSON.stringify(ev.scores || {}), ev.comments
-          );
-        }
-      })();
-    } else if (collection === "projects" && Array.isArray(data)) {
-      sqliteDB.transaction(() => {
-        sqliteDB.prepare("DELETE FROM projects").run();
-        const projStmt = sqliteDB.prepare(`
-          INSERT OR REPLACE INTO projects (
-            id, title, status, owner, createdAt, updatedAt, sections, references_list,
-            figures, tables, collaborators, comments, highlights, versionHistory, exportHistory
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `);
-        for (const pr of data) {
-          projStmt.run(
-            pr.id, pr.title, pr.status, pr.owner, pr.createdAt, pr.updatedAt,
-            JSON.stringify(pr.sections || {}), JSON.stringify(pr.references || []), JSON.stringify(pr.figures || []),
-            JSON.stringify(pr.tables || []), JSON.stringify(pr.collaborators || []), JSON.stringify(pr.comments || []),
-            JSON.stringify(pr.highlights || []), JSON.stringify(pr.versionHistory || []), JSON.stringify(pr.exportHistory || [])
-          );
-        }
-      })();
-    } else if (collection === "pages" && Array.isArray(data)) {
-      sqliteDB.transaction(() => {
-        sqliteDB.prepare("DELETE FROM pages").run();
-        const pageStmt = sqliteDB.prepare(`
-          INSERT OR REPLACE INTO pages (
-            id, title, slug, status, visibility, hideFromNav, seoTitle, seoDescription,
-            isSystem, createdAt, updatedAt, revisions
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `);
-        for (const pg of data) {
-          pageStmt.run(
-            pg.id, pg.title, pg.slug, pg.status, pg.visibility, pg.hideFromNav ? 1 : 0,
-            pg.seoTitle, pg.seoDescription, pg.isSystem ? 1 : 0, pg.createdAt, pg.updatedAt,
-            JSON.stringify(pg.revisions || [])
-          );
-        }
-      })();
-    } else if (collection === "redirects" && Array.isArray(data)) {
-      sqliteDB.transaction(() => {
-        sqliteDB.prepare("DELETE FROM redirects").run();
-        const redirStmt = sqliteDB.prepare(`
-          INSERT OR REPLACE INTO redirects (
-            id, source, target, status, createdAt
-          ) VALUES (?, ?, ?, ?, ?)
-        `);
-        for (const rd of data) {
-          redirStmt.run(rd.id, rd.source, rd.target, rd.status, rd.createdAt);
-        }
-      })();
+    const row = sqliteDB.prepare("SELECT value FROM system_data WHERE key = ?").get(collection);
+    if (!row) return [];
+    try {
+      return JSON.parse(row.value) || [];
+    } catch {
+      return [];
     }
   },
-
-  getItemById: (collection: keyof DatabaseStore, id: string): any => {
+  setCollection: (collection, data) => {
+    if (!sqliteDB) initDB();
+    sqliteDB.prepare("INSERT OR REPLACE INTO system_data (key, value) VALUES (?, ?)").run(collection, JSON.stringify(data));
+  },
+  getItemById: (collection, id) => {
     const col = dbOps.getCollection(collection);
-    return col.find((item: any) => item && (item.id === id || item.email === id || item.username === id));
+    return col.find((item) => item && (item.id === id || item.email === id || item.username === id));
   },
-
-  insertItem: (collection: keyof DatabaseStore, item: any): any => {
+  insertItem: (collection, item) => {
     if (item && !item.id && collection !== "users") {
-      item.id = uuidv4();
+      item.id = (0, import_uuid.v4)();
     }
     const col = dbOps.getCollection(collection);
     col.push(item);
     dbOps.setCollection(collection, col);
     return item;
   },
-
-  updateItem: (collection: keyof DatabaseStore, id: string, updatedFields: any): any => {
+  updateItem: (collection, id, updatedFields) => {
     const col = dbOps.getCollection(collection);
-    let matchedItem: any = null;
-    const updatedCol = col.map((item: any) => {
+    let matchedItem = null;
+    const updatedCol = col.map((item) => {
       if (item && (item.id === id || item.email === id || item.username === id)) {
         matchedItem = { ...item, ...updatedFields };
         return matchedItem;
       }
       return item;
     });
-
     if (matchedItem) {
       dbOps.setCollection(collection, updatedCol);
     }
     return matchedItem;
   },
-
-  deleteItem: (collection: keyof DatabaseStore, id: string): boolean => {
+  deleteItem: (collection, id) => {
     const col = dbOps.getCollection(collection);
     const beforeLength = col.length;
-    const filtered = col.filter((item: any) => !(item && (item.id === id || item.email === id || item.username === id)));
+    const filtered = col.filter((item) => !(item && (item.id === id || item.email === id || item.username === id)));
     dbOps.setCollection(collection, filtered);
     return filtered.length < beforeLength;
   }
 };
+
+// server.ts
+var import_genai = require("@google/genai");
+var import_meta = {};
+var getAIClient = () => {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey || apiKey === "MY_GEMINI_API_KEY" || apiKey.trim() === "") {
+    throw new Error("GEMINI_API_KEY environment variable is missing or unconfigured. Please configure your Gemini API key in the Secrets menu.");
+  }
+  return new import_genai.GoogleGenAI({
+    apiKey,
+    httpOptions: {
+      headers: {
+        "User-Agent": "aistudio-build"
+      }
+    }
+  });
+};
+var isESM = typeof import_meta !== "undefined" && typeof import_meta.url !== "undefined";
+var getAppDirname = () => {
+  if (isESM) {
+    return import_path2.default.dirname((0, import_url.fileURLToPath)(import_meta.url));
+  }
+  return __dirname;
+};
+var __dirname = getAppDirname();
+async function startServer() {
+  const app = (0, import_express.default)();
+  const PORT = 3e3;
+  app.use(import_express.default.json({ limit: "10mb" }));
+  initDB();
+  app.get("/api/db", (req, res) => {
+    try {
+      res.json(dbOps.getStore());
+    } catch (err) {
+      res.status(500).json({ error: "Failed to load database", details: err.message });
+    }
+  });
+  app.post("/api/auth/login", (req, res) => {
+    const { email } = req.body;
+    if (!email) {
+      res.status(400).json({ error: "Email is required" });
+      return;
+    }
+    try {
+      const user = dbOps.getItemById("users", email.toLowerCase());
+      if (user) {
+        res.json({ success: true, user });
+      } else {
+        res.status(404).json({ error: "User profile not found in database. Please register." });
+      }
+    } catch (err) {
+      res.status(500).json({ error: "Login failed", details: err.message });
+    }
+  });
+  app.post("/api/auth/register", (req, res) => {
+    const { user } = req.body;
+    if (!user || !user.email) {
+      res.status(400).json({ error: "Invalid registration payload" });
+      return;
+    }
+    try {
+      const emailLower = user.email.toLowerCase();
+      const existingUser = dbOps.getItemById("users", emailLower);
+      if (existingUser) {
+        res.status(400).json({ error: "A user with this email address is already registered." });
+        return;
+      }
+      const createdUser = dbOps.insertItem("users", {
+        ...user,
+        email: emailLower,
+        joinedAt: (/* @__PURE__ */ new Date()).toISOString().substring(0, 10),
+        status: "Active"
+      });
+      res.json({ success: true, user: createdUser });
+    } catch (err) {
+      res.status(500).json({ error: "Registration failed", details: err.message });
+    }
+  });
+  app.post("/api/auth/profile", (req, res) => {
+    const { email, profile } = req.body;
+    if (!email || !profile) {
+      res.status(400).json({ error: "Invalid profile update payload" });
+      return;
+    }
+    try {
+      const emailLower = email.toLowerCase();
+      const updatedUser = dbOps.updateItem("users", emailLower, profile);
+      if (updatedUser) {
+        res.json({ success: true, user: updatedUser });
+      } else {
+        res.status(404).json({ error: "User profile not found" });
+      }
+    } catch (err) {
+      res.status(500).json({ error: "Profile update failed", details: err.message });
+    }
+  });
+  app.post("/api/collections/:collection/sync", (req, res) => {
+    const colName = req.params.collection;
+    const data = req.body;
+    try {
+      dbOps.setCollection(colName, data);
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ error: `Failed to sync collection ${colName}`, details: err.message });
+    }
+  });
+  app.get("/api/collections/:collection", (req, res) => {
+    const colName = req.params.collection;
+    try {
+      const data = dbOps.getCollection(colName);
+      res.json(data);
+    } catch (err) {
+      res.status(500).json({ error: `Failed to fetch collection ${colName}` });
+    }
+  });
+  app.post("/api/collections/:collection", (req, res) => {
+    const colName = req.params.collection;
+    const item = req.body;
+    try {
+      const created = dbOps.insertItem(colName, item);
+      res.json({ success: true, item: created });
+    } catch (err) {
+      res.status(500).json({ error: `Failed to insert item into ${colName}`, details: err.message });
+    }
+  });
+  app.put("/api/collections/:collection/:id", (req, res) => {
+    const colName = req.params.collection;
+    const { id } = req.params;
+    const updatedFields = req.body;
+    try {
+      const updated = dbOps.updateItem(colName, id, updatedFields);
+      if (updated) {
+        res.json({ success: true, item: updated });
+      } else {
+        res.status(404).json({ error: `Item with ID ${id} not found in ${colName}` });
+      }
+    } catch (err) {
+      res.status(500).json({ error: `Failed to update item in ${colName}`, details: err.message });
+    }
+  });
+  app.delete("/api/collections/:collection/:id", (req, res) => {
+    const colName = req.params.collection;
+    const { id } = req.params;
+    try {
+      const deleted = dbOps.deleteItem(colName, id);
+      res.json({ success: deleted });
+    } catch (err) {
+      res.status(500).json({ error: `Failed to delete item from ${colName}`, details: err.message });
+    }
+  });
+  app.get("/api/system/db-info", (req, res) => {
+    try {
+      const store = dbOps.getStore();
+      const dbPath = import_path2.default.join(process.cwd(), "data", "db.json");
+      let storageBytes = 0;
+      if (import_fs2.default.existsSync(dbPath)) {
+        storageBytes = import_fs2.default.statSync(dbPath).size;
+      } else {
+        storageBytes = Buffer.byteLength(JSON.stringify(store));
+      }
+      const storageUsageStr = storageBytes > 1024 * 1024 ? `${(storageBytes / (1024 * 1024)).toFixed(2)} MB` : storageBytes > 1024 ? `${(storageBytes / 1024).toFixed(2)} KB` : `${storageBytes} Bytes`;
+      let totalRecords = 0;
+      let tableCount = 0;
+      for (const key of Object.keys(store)) {
+        tableCount++;
+        const val = store[key];
+        if (Array.isArray(val)) {
+          totalRecords += val.length;
+        } else if (val && typeof val === "object") {
+          totalRecords += Object.keys(val).length;
+        } else if (val) {
+          totalRecords += 1;
+        }
+      }
+      res.json({
+        databaseEngine: "JSON Local Database (with atomic replication)",
+        databaseStatus: "Optimal",
+        connectionStatus: "Connected",
+        serverStatus: "Online",
+        databaseVersion: "v1.4.2-stable",
+        storageUsage: storageUsageStr,
+        numberTables: tableCount,
+        totalRecords,
+        filePath: dbPath
+      });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to load database diagnostics", details: err.message });
+    }
+  });
+  let memorySitemap = "";
+  let memoryRobots = "";
+  const publicDir = import_path2.default.join(process.cwd(), "public");
+  const sitemapPath = import_path2.default.join(publicDir, "sitemap.xml");
+  const robotsPath = import_path2.default.join(publicDir, "robots.txt");
+  if (import_fs2.default.existsSync(sitemapPath)) {
+    try {
+      memorySitemap = import_fs2.default.readFileSync(sitemapPath, "utf-8");
+    } catch (e) {
+      console.error("Error reading initial sitemap:", e);
+    }
+  }
+  if (import_fs2.default.existsSync(robotsPath)) {
+    try {
+      memoryRobots = import_fs2.default.readFileSync(robotsPath, "utf-8");
+    } catch (e) {
+      console.error("Error reading initial robots.txt:", e);
+    }
+  }
+  app.post("/api/sitemap", (req, res) => {
+    const { xml } = req.body;
+    if (!xml) {
+      res.status(400).json({ error: "No XML content provided" });
+      return;
+    }
+    try {
+      memorySitemap = xml;
+      if (!import_fs2.default.existsSync(publicDir)) {
+        import_fs2.default.mkdirSync(publicDir, { recursive: true });
+      }
+      import_fs2.default.writeFileSync(sitemapPath, xml, "utf-8");
+      const distPath = import_path2.default.join(process.cwd(), "dist");
+      if (import_fs2.default.existsSync(distPath)) {
+        import_fs2.default.writeFileSync(import_path2.default.join(distPath, "sitemap.xml"), xml, "utf-8");
+      }
+      console.log("[Sitemap Server] Sitemap XML successfully generated and synchronized to files.");
+      res.json({ success: true, message: "Sitemap updated successfully" });
+    } catch (error) {
+      console.error("[Sitemap Server] Error saving sitemap.xml:", error);
+      res.status(500).json({ error: "Failed to write sitemap file", details: error.message });
+    }
+  });
+  app.post("/api/robots", (req, res) => {
+    const { robots } = req.body;
+    if (!robots) {
+      res.status(400).json({ error: "No robots content provided" });
+      return;
+    }
+    try {
+      memoryRobots = robots;
+      if (!import_fs2.default.existsSync(publicDir)) {
+        import_fs2.default.mkdirSync(publicDir, { recursive: true });
+      }
+      import_fs2.default.writeFileSync(robotsPath, robots, "utf-8");
+      const distPath = import_path2.default.join(process.cwd(), "dist");
+      if (import_fs2.default.existsSync(distPath)) {
+        import_fs2.default.writeFileSync(import_path2.default.join(distPath, "robots.txt"), robots, "utf-8");
+      }
+      console.log("[Sitemap Server] Robots.txt successfully updated and synchronized to files.");
+      res.json({ success: true, message: "Robots.txt updated successfully" });
+    } catch (error) {
+      console.error("[Sitemap Server] Error saving robots.txt:", error);
+      res.status(500).json({ error: "Failed to write robots.txt", details: error.message });
+    }
+  });
+  app.get("/sitemap.xml", (req, res) => {
+    res.header("Content-Type", "application/xml");
+    if (memorySitemap) {
+      res.send(memorySitemap);
+      return;
+    }
+    if (import_fs2.default.existsSync(sitemapPath)) {
+      try {
+        const fileContent = import_fs2.default.readFileSync(sitemapPath, "utf-8");
+        memorySitemap = fileContent;
+        res.send(fileContent);
+        return;
+      } catch (err) {
+        console.error("Error reading sitemap file on request:", err);
+      }
+    }
+    const fallbackSitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://healthedia.org/</loc>
+    <lastmod>${(/* @__PURE__ */ new Date()).toISOString().substring(0, 10)}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>`;
+    res.send(fallbackSitemap);
+  });
+  app.get("/robots.txt", (req, res) => {
+    res.header("Content-Type", "text/plain");
+    if (memoryRobots) {
+      res.send(memoryRobots);
+      return;
+    }
+    if (import_fs2.default.existsSync(robotsPath)) {
+      try {
+        const fileContent = import_fs2.default.readFileSync(robotsPath, "utf-8");
+        memoryRobots = fileContent;
+        res.send(fileContent);
+        return;
+      } catch (err) {
+        console.error("Error reading robots file on request:", err);
+      }
+    }
+    const defaultRobots = `User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /api/
+Disallow: /admin/
+
+Sitemap: https://healthedia.org/sitemap.xml`;
+    res.send(defaultRobots);
+  });
+  app.post("/api/ai/chat", async (req, res) => {
+    const { messages, paperContext } = req.body;
+    if (!messages || !Array.isArray(messages)) {
+      res.status(400).json({ error: "Invalid payload: messages must be an array" });
+      return;
+    }
+    try {
+      const apiKey = process.env.GEMINI_API_KEY;
+      if (!apiKey || apiKey === "MY_GEMINI_API_KEY" || apiKey.trim() === "") {
+        throw new Error("GEMINI_API_KEY environment variable is missing or unconfigured.");
+      }
+      const ai = getAIClient();
+      let systemInstruction = "You are a professional, expert Sports Science, Clinical Rehabilitation, and Cardiometabolic Health AI Assistant named Healthedia AI.\nProvide objective, evidence-based responses citing physiological principles. Be supportive but highly rigorous and academic.\nIf the user asks about specific research, explain concepts clearly using established literature references.";
+      if (paperContext) {
+        systemInstruction += `
+
+Active research paper context:
+Title: ${paperContext.title}
+Authors: ${paperContext.authors?.join(", ") || "Unknown"}
+Abstract: ${paperContext.abstract || "No abstract available"}`;
+      }
+      const chatHistory = messages.slice(0, -1).map((m) => ({
+        role: m.role === "assistant" ? "model" : "user",
+        parts: [{ text: m.content }]
+      }));
+      const lastUserMessage = messages[messages.length - 1];
+      if (!lastUserMessage || !lastUserMessage.content) {
+        res.status(400).json({ error: "Last message is empty" });
+        return;
+      }
+      const activeChat = ai.chats.create({
+        model: "gemini-2.5-flash",
+        history: chatHistory,
+        config: {
+          systemInstruction,
+          temperature: 0.7
+        }
+      });
+      const result = await activeChat.sendMessage({ message: lastUserMessage.content });
+      res.json({ text: result.text || "" });
+    } catch (err) {
+      const lastUserMsg = messages[messages.length - 1]?.content || "";
+      const lowerMsg = lastUserMsg.toLowerCase();
+      let fallbackText = "";
+      if (lowerMsg.includes("acl") || lowerMsg.includes("rehabilitation")) {
+        fallbackText = "Evidence-based ACL Rehabilitation: Phase 1 focuses on swelling control and early 0\xB0 extension. Phase 2 emphasizes closed-chain quadriceps strength (squats 0-60\xB0). Phase 3 introduces linear running at >80% Limb Symmetry Index (LSI).";
+      } else if (lowerMsg.includes("endocrine") || lowerMsg.includes("fatigue")) {
+        fallbackText = "Endocrine Fatigue Mitigation: Implement wave periodization (3 weeks loading, 1 week deload) to preserve basal cortisol. Maintain intra-workout carbohydrate availability to attenuate acute salivary IgA suppression.";
+      } else if (lowerMsg.includes("heart") || lowerMsg.includes("strain")) {
+        fallbackText = "Myocardial Strain Dynamics: Endurance training induces eccentric LV remodeling. Speckle-tracking echocardiography demonstrates transient post-race reductions in global longitudinal strain (GLS) recovering within 48-72 hours.";
+      } else {
+        fallbackText = `${lastUserMsg}: Evidence-based clinical research index analyzing physiological adaptations, neuromuscular mechanics, and targeted performance reconditioning protocols.`;
+      }
+      res.json({ text: fallbackText, isFallback: true });
+    }
+  });
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "ok", service: "Healthedia SEO Core" });
+  });
+  if (process.env.NODE_ENV !== "production") {
+    console.log("[Sitemap Server] Initializing Vite Developer Middleware...");
+    const vite = await (0, import_vite.createServer)({
+      server: { middlewareMode: true },
+      appType: "spa"
+    });
+    app.use(vite.middlewares);
+  } else {
+    console.log("[Sitemap Server] Running in Production. Serving static assets...");
+    const distPath = import_path2.default.join(process.cwd(), "dist");
+    app.use(import_express.default.static(distPath));
+    app.get("*", (req, res) => {
+      res.sendFile(import_path2.default.join(distPath, "index.html"));
+    });
+  }
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`[Sitemap Server] Healthedia dynamic service running on http://localhost:${PORT}`);
+  });
+}
+startServer();
+//# sourceMappingURL=server.cjs.map
